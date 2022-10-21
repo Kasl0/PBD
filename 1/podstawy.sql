@@ -7,7 +7,7 @@
 --USE Northwind SELECT OrderID, CustomerID FROM Orders WHERE OrderDate < '1996-08-01'
 
 --USE Northwind SELECT ContactName, [Address] FROM Customers WHERE City = 'London'
---USE Northwind SELECT ContactName, [Address] FROM Customers WHERE Country = 'France' OR Country = 'Spain'
+--USE Northwind SELECT ContactName, [Address] FROM Customers WHERE Country IN ('France', 'Spain')
 --USE Northwind SELECT ProductName, UnitPrice FROM Products WHERE UnitPrice BETWEEN 20 AND 30
 --USE Northwind SELECT ProductName, UnitPrice FROM Products, Categories WHERE CategoryName = 'Meat/Poultry'
 --USE Northwind SELECT ProductName, UnitsInStock FROM Products, Suppliers WHERE CompanyName = 'Tokyo Traders'
@@ -15,12 +15,15 @@
 
 --USE Northwind SELECT ProductName FROM Products WHERE QuantityPerUnit LIKE '%bottle%'
 --USE Northwind SELECT Title FROM Employees WHERE LastName LIKE '[B-L]%'
---USE Northwind SELECT Title FROM Employees WHERE LastName LIKE 'B%' OR LastName LIKE 'L%'
+--USE Northwind SELECT Title FROM Employees WHERE LastName LIKE '[BL]%'
 --USE Northwind SELECT CategoryName, [Description] FROM Categories WHERE [Description] LIKE '%,%'
 --USE Northwind SELECT CustomerID, CompanyName FROM Customers WHERE CompanyName LIKE '%Store%'
 
---USE Northwind SELECT CompanyName, Country FROM Suppliers WHERE Country IN ('Japan' , 'Italy')
---USE Northwind SELECT CompanyName, Fax FROM Suppliers WHERE Fax IS NULL
+--USE Northwind SELECT * FROM Products WHERE UnitPrice NOT BETWEEN 10 AND 20
+--USE Northwind SELECT ProductName, UnitPrice FROM Products WHERE UnitPrice > 20 AND UnitPrice < 30
+
+--USE Northwind SELECT CompanyName, Country FROM Suppliers WHERE Country IN ('Japan', 'Italy')
+
 --USE Northwind SELECT OrderID, OrderDate, CustomerID FROM Orders WHERE ShipCountry = 'Argentina' AND (ShippedDate IS NULL OR ShippedDate > GETDATE())
 
 --USE Northwind SELECT CompanyName, Country FROM Customers ORDER BY Country, CompanyName

@@ -1,7 +1,7 @@
 --USE library SELECT title, title_no FROM title
 --USE library SELECT * FROM title WHERE title_no = 10
 --USE library SELECT DISTINCT member_no, fine_assessed FROM loanhist WHERE fine_assessed BETWEEN 8 AND 9
---USE library SELECT title_no, author FROM title WHERE author = 'author' OR author = 'Jane Austen'
+--USE library SELECT title_no, author FROM title WHERE author IN ('Charles Dickens', 'Jane Austen')
 --USE library SELECT title_no, title FROM title WHERE title LIKE '%adventures%'
 --USE library SELECT member_no, fine_assessed, fine_paid, fine_waived FROM loanhist WHERE (ISNULL(fine_assessed, 0) - ISNULL(fine_paid, 0) - ISNULL(fine_waived, 0)) > 0
 --USE library SELECT DISTINCT city, [state] FROM adult
