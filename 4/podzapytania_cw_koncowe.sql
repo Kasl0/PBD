@@ -1,52 +1,22 @@
---USE Northwind2
---SELECT CompanyName, Phone FROM Customers
---WHERE CustomerID IN
---( SELECT DISTINCT CustomerID FROM Orders
---INNER JOIN Shippers ON ShipperID = ShipVia
---WHERE Year(ShippedDate) = 1997 AND CompanyName = 'United Package')
+--USE Northwind2 SELECT CompanyName, Phone FROM Customers WHERE CustomerID IN ( SELECT DISTINCT CustomerID FROM Orders INNER JOIN Shippers ON ShipperID = ShipVia WHERE Year(ShippedDate) = 1997 AND CompanyName = 'United Package')
+--USE Northwind2 SELECT DISTINCT CompanyName, Phone FROM Customers AS c INNER JOIN Orders AS o ON o.CustomerID = c.CustomerID INNER JOIN [Order Details] AS od ON od.OrderID = o.OrderID INNER JOIN Products AS p ON p.ProductID = od.ProductID WHERE CategoryID IN ( SELECT CategoryID FROM Categories WHERE CategoryName = 'Confections')
+--USE Northwind2 SELECT CompanyName, Phone FROM Customers as c WHERE NOT EXISTS ( SELECT * FROM Orders AS o INNER JOIN [Order Details] AS od ON od.OrderID = o.OrderID INNER JOIN Products AS p ON p.ProductID = od.ProductID INNER JOIN Categories AS ca ON ca.CategoryID = p.CategoryID WHERE CategoryName = 'Confections' AND c.CustomerID = o.CustomerID )
 
---SELECT OrderID, (Freight + (SELECT sum(UnitPrice * Quantity) FROM [Order Details] WHERE [Order Details].OrderID = Orders_global.OrderID AS "wart"))
+--USE Northwind2 SELECT DISTINCT ProductID, (SELECT Max(Quantity) FROM [Order Details] AS od2 WHERE od1.ProductID = od2.ProductID) FROM [Order Details] AS od1
+--USE Northwind2 SELECT ProductID, UnitPrice FROM Products WHERE UnitPrice < ( SELECT Avg(UnitPrice) FROM Products )
+--USE Northwind2 SELECT ProductID, UnitPrice FROM Products AS p1 WHERE UnitPrice < ( SELECT Avg(UnitPrice) FROM Products AS p2 WHERE p1.CategoryID = p2.CategoryID)
 
---USE Northwind2
---SELECT CompanyName, [Address] FROM Customers
---WHERE CustomerID NOT IN
---( SELECT CustomerID FROM Orders
---WHERE Year(OrderDate) = 1997)
+--USE Northwind2 SELECT ProductName, UnitPrice, ( SELECT Avg(UnitPrice) FROM Products ) AS Avarage, Abs(UnitPrice - ( SELECT Avg(UnitPrice) FROM Products )) AS Difference FROM Products
+--USE Northwind2 SELECT CategoryName, ProductName, UnitPrice, ( SELECT Avg(UnitPrice) FROM Products AS p2 WHERE p1.CategoryID = p2.CategoryID) AS Avarage, Abs(UnitPrice - ( SELECT Avg(UnitPrice) FROM Products AS p2 WHERE p1.CategoryID = p2.CategoryID)) AS Difference FROM Products AS p1 INNER JOIN Categories AS c ON c.CategoryID = p1.CategoryID
 
---SELECT ProductName
---FROM Products
---WHERE ProductID IN (SELECT DISTINCT ProductID
---                    FROM [Order Details]
---                             INNER JOIN Orders
---                                        ON [Order Details].OrderID = Orders.OrderID
---                             INNER JOIN Customers
---                                        ON Orders.CustomerID = Customers.CustomerID
---                    GROUP BY ProductID
---                    HAVING COUNT(Orders.CustomerID) > 1)
+--USE Northwind2 SELECT OrderID, ROUND(( SELECT SUM(Quantity * UnitPrice * (1 - Discount)) FROM [Order Details] AS od WHERE od.OrderID = o.OrderID) + Freight, 2) FROM Orders AS o WHERE o.OrderID = 1025
+--USE Northwind2 SELECT OrderID, ROUND(( SELECT SUM(Quantity * UnitPrice * (1 - Discount)) FROM [Order Details] AS od WHERE od.OrderID = o.OrderID) + Freight, 2) FROM Orders AS o
+--USE Northwind2 SELECT CompanyName, [Address] FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders WHERE Year(OrderDate) = 1997)
+--USE Northwind2 SELECT ProductName FROM Products WHERE ProductID IN (SELECT DISTINCT ProductID FROM [Order Details] AS od INNER JOIN Orders AS o ON od.OrderID = o.OrderID INNER JOIN Customers AS c ON o.CustomerID = c.CustomerID GROUP BY ProductID HAVING COUNT(c.CustomerID) > 1)
 
---USE Northwind2 SELECT FirstName, LastName, ROUND(SUM(Quantity * od.UnitPrice * (1-Discount)), 2) FROM Employees AS e INNER JOIN Orders AS o ON o.EmployeeID = e.EmployeeID INNER JOIN [Order Details] AS od ON od.OrderID = o.OrderID GROUP BY FirstName, LastName, e.EmployeeID
-
---SELECT FirstName, LastName, (
---        SELECT SUM(CostOfEachOrder.OrderCost)
---        FROM(
---                SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost
---                FROM Orders INNER JOIN [Order Details]
---                    ON Orders.OrderID = [Order Details].OrderID
---                WHERE Orders.EmployeeID = Employees.EmployeeID
---                GROUP BY Orders.OrderID, Freight
---            ) AS CostOfEachOrder
---    )
---FROM Employees
-
-SELECT FirstName, LastName, (
-        SELECT SUM(CostOfEachOrder.OrderCost)
-        FROM(
-                SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost
-                FROM Orders INNER JOIN [Order Details]
-                    ON Orders.OrderID = [Order Details].OrderID
-                WHERE Orders.EmployeeID = Employees.EmployeeID
-                GROUP BY Orders.OrderID, Freight
-            ) AS CostOfEachOrder
-    )
-FROM Employees
-
+--USE Northwind2 SELECT FirstName, LastName, ( SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = Employees.EmployeeID GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) FROM Employees
+--USE Northwind2 SELECT TOP 1 FirstName, LastName, (SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = Employees.EmployeeID AND Year(OrderDate) = 1997 GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) AS 'Value' FROM Employees ORDER BY 'Value' DESC
+--USE Northwind2 SELECT FirstName, LastName, (SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = Employees.EmployeeID GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) AS 'Value' FROM Employees WHERE ReportsTo IS NOT NULL
+--USE Northwind2 SELECT FirstName, LastName, (SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = Employees.EmployeeID GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) AS 'Value' FROM Employees WHERE ReportsTo IS NULL
+--USE Northwind2 SELECT FirstName, LastName, (SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = e1.EmployeeID GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) AS 'Value', (SELECT MAX(OrderDate) FROM Orders AS o2 WHERE o2.EmployeeID = e1.EmployeeID GROUP BY EmployeeID) AS 'Date' FROM Employees AS e1 WHERE ReportsTo IS NOT NULL
+--USE Northwind2 SELECT FirstName, LastName, (SELECT Round(SUM(CostOfEachOrder.OrderCost), 2) FROM(SELECT SUM((1-Discount)*UnitPrice*Quantity) + Freight AS OrderCost FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID WHERE Orders.EmployeeID = e1.EmployeeID GROUP BY Orders.OrderID, Freight) AS CostOfEachOrder) AS 'Value', (SELECT MAX(OrderDate) FROM Orders AS o2 WHERE o2.EmployeeID = e1.EmployeeID GROUP BY EmployeeID) AS 'Date' FROM Employees AS e1 WHERE ReportsTo IS NULL
